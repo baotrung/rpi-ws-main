@@ -1,0 +1,19 @@
+{
+  "name": "rpi-ws-main",
+  "version": "1.0.0",
+  "description": "rpi main",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baotrung/rpi-ws-main.git"
+  },
+  "author": "elguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baotrung/rpi-ws-main/issues"
+  },
+  "homepage": "https://github.com/baotrung/rpi-ws-main#readme"
+}
