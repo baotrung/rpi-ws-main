@@ -1,0 +1,6 @@
+{
+    "name":"String",
+    "host":"String",
+    "port":"Number",
+    "secret":"String"
+}

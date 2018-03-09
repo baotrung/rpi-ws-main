@@ -15,5 +15,13 @@
   "bugs": {
     "url": "https://github.com/baotrung/rpi-ws-main/issues"
   },
-  "homepage": "https://github.com/baotrung/rpi-ws-main#readme"
+  "homepage": "https://github.com/baotrung/rpi-ws-main#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-ip-access-control": "^1.0.5",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "underscore": "^1.8.3"
+  }
 }
