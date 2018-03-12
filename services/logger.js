@@ -10,22 +10,15 @@ module.exports = {
 };
 
 function rightnow() {
-    var date = new Date();
-    var filename = '' + date.getFullYear() + '-' + date.getMonth() + '-' + date.getDay() + '.log';
+    var now = new Date(Date.now()).toLocaleString().split(' ');
+    var filename = now[0] + '.log';
     var path = LOG_DIR + '/' + filename;
-    var time = '' + twoDigit(date.getHours()) + ':' + twoDigit(date.getMinutes()) + ':' + twoDigit(date.getSeconds());
+    var time = now[1];
+    console.log(path);
     return {
         path: path,
         time: time
     };
-}
-
-function twoDigit(number) {
-    if (number < 10) {
-        return ('0' + number);
-    } else {
-        return ('' + number);
-    }
 }
 
 function info(title, msg) {
