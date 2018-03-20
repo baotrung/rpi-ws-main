@@ -10,11 +10,10 @@ module.exports = {
 };
 
 function rightnow() {
-    var now = new Date(Date.now()).toLocaleString().split(' ');
+    var now = new Date(Date.now()).toISOString().split('T');
     var filename = now[0] + '.log';
     var path = LOG_DIR + '/' + filename;
-    var time = now[1];
-    console.log(path);
+    var time = now[1].split('.')[0];
     return {
         path: path,
         time: time
@@ -32,10 +31,13 @@ function err(title, msg) {
 function log(title, msg, level) {
     var now = rightnow();
     var line = cfg.name + '  [' + now.time + '] - [' + level + '] - ' + title + ' | ' + msg + '\n';
+
+    if(!fs.existsSync(LOG_DIR)){
+        fs.mkdirSync(LOG_DIR);
+    }
+
     if (fs.existsSync(now.path)) {
-        fs.appendFileSync(now.path, line, (err) => {
-            if (err) throw err;
-        });
+        fs.appendFileSync(now.path, line);
     } else {
         fs.writeFile(now.path, line, (err) => {
             if (err) throw err;
