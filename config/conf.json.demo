@@ -1,6 +1,14 @@
 {
     "name":"String",
-    "host":"String",
-    "port":"Number",
+    "server":{
+        "host":"String",
+        "port":"Number"
+    },
+    "database":{
+        "host": "String",
+        "user": "String",
+        "password": "String",
+        "database": "String"
+    },
     "secret":"String"
 }

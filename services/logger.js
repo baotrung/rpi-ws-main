@@ -10,10 +10,10 @@ module.exports = {
 };
 
 function rightnow() {
-    var now = new Date(Date.now()).toISOString().split('T');
-    var filename = now[0] + '.log';
+    var now = new Date(Date.now());
+    var filename = now.toISOString().split('T')[0] + '.log';
     var path = LOG_DIR + '/' + filename;
-    var time = now[1].split('.')[0];
+    var time = now.toTimeString();
     return {
         path: path,
         time: time

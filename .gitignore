@@ -57,7 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
-# Custom 
+# Custom
 config/*.json
 config/*.js
 

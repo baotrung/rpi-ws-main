@@ -1,14 +1,17 @@
 {
-    "mode": "deny/allow",
-    "denys": [],
-    "allows": [],
-    "forceConnectionAddress": "true/false",
-    "statusCode": "number",
-    "redirectTo": "",
-    "message": {
-        "e": {
-            "sttcode": "number",
-            "msg": "permission denied"
+    "global":
+    {
+        "mode": "deny/allow",
+        "denys": [],
+        "allows": [],
+        "forceConnectionAddress": "true/false",
+        "statusCode": "number",
+        "redirectTo": "",
+        "message": {
+            "e": {
+                "sttcode": "number",
+                "msg": "permission denied"
+            }
         }
     }
 }
