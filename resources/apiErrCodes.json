@@ -1,0 +1,14 @@
+{
+    "ERR_INTERNAL":{
+        "code":1,
+        "msg":"internal error"
+    },
+    "ERR_AUTHENTICATION_LOGIN":{
+        "code":2,
+        "msg":"username or password incorrect"
+    },
+    "ERR_AUTHENTICATION_TOKEN":{
+        "code":3,
+        "msg":"token missing, expired or incorrect"
+    }
+}

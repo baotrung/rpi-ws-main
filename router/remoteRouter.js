@@ -4,53 +4,75 @@ var rp = require('request-promise');
 var logger = require('../services/logger');
 var cfg = require('../config/conf.json');
 var _ = require('underscore');
+var db = require('../services/database');
+var err = require('../resources/apiErrCodes.json');
+var auth = require('../services/authenticate');
 
-router.use('/remote', firewall);
+router.use('/', firewall);
+router.use('/remote',auth.verifyToken);
 
-router.get('/remote/check', function (req, res) {
+router.post('/auth', (req,res) => {
+    db.findUserByUserName(req.body.username)
+    .then(
+        result => {
+            if(result.length > 0){
+                res.json(auth.verifypwd(req.body.password,result[0]));
+            }else{
+                res.json({
+                    "result": null,
+                    "err" : err.ERR_AUTHENTICATION_LOGIN
+                })
+            }
+        },
+        err => {
+            res.json({
+                "result": null,
+                "err" : err.ERR_INTERNAL
+            })
+        }
+    );
+})
+
+
+router.get('/remote/check',(req, res) => {
     logger.info('REQUEST', 'type: GET; url: "/remote/check";');
     res.send('ok');
 });
 
-router.get('/remote/init', function (req, res) {
-    logger.info('REQUEST', 'type: GET; url: "/remote/init";');
-
-    var $data = {
-        'd': null,
-        'e': null
-    };
-
-    var promises = [];
-
-    _.each(cfg.locations, (location) => {
-        promises.push(new Promise (function (resolve,reject) {
-            var options = {
-                uri: 'http://'+location.host+':'+location.port+'/remote/check',
-                qs: {
-                    access_token: 'xxxxx xxxxx' // -> uri + '?access_token=xxxxx%20xxxxx'
-                },
-                headers: {
-                    'User-Agent': 'Request-Promise'
-                },
-                json: true // Automatically parses the JSON string in the response
-            };
-
-            rp(options).then(function (data) {
-                return resolve(data);
-            }).catch(function (err) {
-                return reject(err);
+router.get('/remote/init', (req, res) => {
+    console.log(req.route.path);
+    db.getAllStt()
+        .then(
+            rows => {
+                res.send({
+                    "result": rows,
+                    "err": null
+                });
+            },
+            err => {
+                throw (err);
+            }
+        ).catch(err => {
+            logger.err("GET REQUEST - init", err.code);
+            logger.log("GET REQUEST - init",err,"DEBUG");
+            res.send({
+                "result": null,
+                "err" : {
+                    "code" : 1,
+                    "msg": "internal error"
+                }
             });
-        }));
-    });
-
-    Promise.all(promises).then((datas) => {
-        res.send(datas);
-    }).catch((error) => {
-        res.send(error);
-    });
-
+        });
 });
 
+router.post('/remote/light', (req,res) => {
+    //TODO: light on off
+    console.log(req.body);
+
+
+
+    res.send('ok');
+});
 
 
 module.exports = router;

@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/baotrung/rpi-ws-main#readme",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "express-ip-access-control": "^1.0.5",
+    "jsonwebtoken": "^8.2.0",
     "mysql": "^2.15.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",

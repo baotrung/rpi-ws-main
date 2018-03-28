@@ -1,9 +1,15 @@
 const cfg = require('./config/conf.json');
 var http = require('http');
 const remoteRouter = require('./router/remoteRouter');
-const app = require('express')();
+const express = require('express');
+const app = express();
 const logger = require('./services/logger');
+var bodyParser = require('body-parser')
 
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}));
 app.use(remoteRouter);
 
 var server = http.createServer(app);
