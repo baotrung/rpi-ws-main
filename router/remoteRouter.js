@@ -7,11 +7,15 @@ var _ = require('underscore');
 var db = require('../services/database');
 var err = require('../resources/apiErrCodes.json');
 var auth = require('../services/authenticate');
+var verifyParams = require('../services/verifyParams');
+var Logger = require('../services/logger.1');
+
+var apiLog = new Logger('restapi');
 
 router.use('/', firewall);
 router.use('/remote',auth.verifyToken);
 
-router.post('/auth', (req,res) => {
+router.post('/auth', verifyParams ,(req,res) => {
     db.findUserByUserName(req.body.username)
     .then(
         result => {
@@ -65,12 +69,17 @@ router.get('/remote/init', (req, res) => {
         });
 });
 
-router.post('/remote/light', (req,res) => {
-    //TODO: light on off
-    console.log(req.body);
-
-
-
+router.post('/remote/light',verifyParams, (req,res) => {
+    //TODO:
+    db.setLight(req.body.id,req.body.status)
+    .then(
+        rows => {
+            console.log(rows.affectedRows);
+        },
+        err => {
+            console.log(err);
+        }
+    );
     res.send('ok');
 });
 

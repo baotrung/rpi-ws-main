@@ -72,14 +72,30 @@ function getAllStt() {
     });
 }
 
-function setLight(ids,stt){
+function setLight(id,stt){
     var sql = "UPDATE LIGHTS SET status = " + stt + " WHERE id = " + id;
 
     return new Promise((resolve,reject) => {
         db.query(sql)
         .then(
             result => {
-                resolve('ok');
+                resolve(result);
+            },
+            err => {
+                reject(err);
+            }
+        );
+    });
+}
+
+function setToken(username,token){
+    var sql = "UPDATE USERS SET userToken = '" + token + "' WHERE userName = '" + username +"'";
+
+    return new Promise((resolve,reject) => {
+        db.query(sql)
+        .then(
+            result => {
+                resolve(result);
             },
             err => {
                 reject(err);
@@ -122,5 +138,6 @@ function findUserByUserName(username){
 module.exports = {
     getAllStt: getAllStt,
     setLight: setLight,
-    findUserByUserName: findUserByUserName
+    findUserByUserName: findUserByUserName,
+    setToken:setToken
 };
