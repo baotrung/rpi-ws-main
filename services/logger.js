@@ -1,46 +1,63 @@
-const fs = require('fs');
-const cfg = require('../config/conf');
-const LOG_DIR = './logs';
+const fs = require('fs')
+const cfg = require('../config/conf')
 
-
-module.exports = {
-    info: info,
-    err: err,
-    log: log
-};
-
-function rightnow() {
-    var now = new Date(Date.now());
-    var filename = now.toISOString().split('T')[0] + '.log';
-    var path = LOG_DIR + '/' + filename;
-    var time = now.toTimeString();
-    return {
-        path: path,
-        time: time
-    };
-}
-
-function info(title, msg) {
-    log(title, msg, 'INFO');
-}
-
-function err(title, msg) {
-    log(title, msg, 'ERROR');
-}
-
-function log(title, msg, level) {
-    var now = rightnow();
-    var line = cfg.name + '  [' + now.time + '] - [' + level + '] - ' + title + ' | ' + msg + '\n';
-
-    if(!fs.existsSync(LOG_DIR)){
-        fs.mkdirSync(LOG_DIR);
+class Logger{
+    constructor(domain){
+        if(cfg.logLocation.hasOwnProperty(domain)){
+            this.dir = cfg.logLocation[domain]
+        }else{
+            this.dir = './logs'
+        }
     }
 
-    if (fs.existsSync(now.path)) {
-        fs.appendFileSync(now.path, line);
-    } else {
-        fs.writeFile(now.path, line, (err) => {
-            if (err) throw err;
-        });
+    ensureExistDir(path){
+        var pathArr = path.split("/")
+        var dirCursor = ''
+        pathArr.forEach(item => {
+            dirCursor += item;
+            if(item != '' && item != '.'){
+                if(!fs.existsSync(dirCursor)){
+                    fs.mkdirSync(dirCursor)
+                }
+            }
+            dirCursor += '/'
+        })
+    }
+
+    rightnow() {
+        var now = new Date(Date.now())
+        var filename = now.toISOString().split('T')[0] + '.log'
+        var path = this.dir + '/' + filename
+        var time = now.toTimeString()
+        return {
+            path: path,
+            time: time
+        }
+    }
+
+    info(title, msg) {
+        this.log(title, msg, 'INFO')
+    }
+
+    err(title, msg) {
+        this.log(title, msg, 'ERROR')
+    }
+
+    log(title, msg, level) {
+        var now = this.rightnow()
+        var line = cfg.name + '  [' + now.time + '] - [' + level + '] - ' + title + ' | ' + msg + '\n'
+
+        this.ensureExistDir(this.dir)
+
+        if (fs.existsSync(now.path)) {
+            fs.appendFileSync(now.path, line)
+        } else {
+            fs.writeFile(now.path, line, (err) => {
+                if (err) throw err
+            })
+        }
     }
 }
+
+module.exports = Logger
+
