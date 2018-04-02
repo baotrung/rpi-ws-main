@@ -3,18 +3,18 @@ const cfg = require('../config/conf')
 
 class Logger{
     constructor(domain){
-        if(cfg.logLocation.hasOwnProperty(domain)){
-            this.dir = cfg.logLocation[domain]
+        if(cfg.logger.paths.hasOwnProperty(domain)){
+            this.dir = cfg.logger.paths[domain]
         }else{
-            this.dir = './logs'
+            this.dir = cfg.logger.paths.default
         }
     }
 
     ensureExistDir(path){
-        var pathArr = path.split("/")
+        var pathArr = path.split('/')
         var dirCursor = ''
         pathArr.forEach(item => {
-            dirCursor += item;
+            dirCursor += item
             if(item != '' && item != '.'){
                 if(!fs.existsSync(dirCursor)){
                     fs.mkdirSync(dirCursor)
@@ -28,10 +28,10 @@ class Logger{
         var now = new Date(Date.now())
         var filename = now.toISOString().split('T')[0] + '.log'
         var path = this.dir + '/' + filename
-        var time = now.toTimeString()
+        var time = now.toTimeString().split(' ')
         return {
             path: path,
-            time: time
+            time: time[0] + ' ' + time[1]
         }
     }
 
