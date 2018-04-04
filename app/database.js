@@ -136,7 +136,7 @@ function findUserByUserName(username){
 }
 
 function getLightTarget(id){
-    var sql = "SELECT LIGHTS.pin, LOCATIONS.ip, LOCATIONS.port FROM LIGHTSS,LOCATIONS WHERE LOCATIONS.id = LIGHTS.location  AND LIGHTS.id = " + id + " LIMIT 1"
+    var sql = "SELECT LIGHTS.pin, LOCATIONS.ip, LOCATIONS.port FROM LIGHTS,LOCATIONS WHERE LOCATIONS.id = LIGHTS.location  AND LIGHTS.id = " + id + " LIMIT 1"
     return new Promise ((resolve,reject) => {
         db.query(sql)
         .then(
