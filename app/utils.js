@@ -69,6 +69,7 @@ function verifyparams(req,res,next){
             result: null,
             err: e.ERR_PARAMS
         })
+        logger.info(req.method +' - ' + req.originalUrl, 'END')
     }
 }
 

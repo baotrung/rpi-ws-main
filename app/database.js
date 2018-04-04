@@ -37,8 +37,8 @@ var db = new Database()
 
 function getAllStt() {
     //console.log("debug getAllStt()")
-
-    db.query('SELECT lo.id as locationId,lo.name as locationName, li.id as lightId, li.name as liName, li.status FROM LOCATIONS lo,LIGHTS li WHERE lo.id = li.location ORDER BY lo.id')
+    return new Promise((resolve,reject) =>{
+        db.query('SELECT lo.id as locationId,lo.name as locationName, li.id as lightId, li.name as liName, li.status FROM LOCATIONS lo,LIGHTS li WHERE lo.id = li.location ORDER BY lo.id')
         .then(rows => {
             //console.log("querry success")
             //console.log(rows)
@@ -61,42 +61,45 @@ function getAllStt() {
                 })
                 cpt++
                 if (cpt === rows.length) {
-                    Promise.resolve(result)
+                    resolve(result)
                 }
             })
         },
         err => {
-            Promise.reject(err)
+            reject(err)
         })
-
+    })
 }
 
-function setLight(id,stt){
-    var sql = "UPDATE LIGHTS SET status = " + stt + " WHERE id = " + id
-
-    db.query(sql)
+function setLight(data){
+    //console.log("data = " + data.status + " - " + data.id)
+    var sql = "UPDATE LIGHTS SET status = " + data.status + " WHERE id = " + data.id
+    return new Promise((resolve,reject) => {
+        db.query(sql)
         .then(
             result => {
-                Promise.resolve(result)
+                resolve(result)
             },
             err => {
-                Promise.reject(err)
+                reject(err)
             }
         )
-
+    })
 }
 
 function setToken(username,token){
     var sql = "UPDATE USERS SET userToken = '" + token + "' WHERE userName = '" + username +"'"
-    db.query(sql)
+    return new Promise((resolve,reject) => {
+        db.query(sql)
         .then(
             result => {
-                Promise.resolve(result)
+                resolve(result)
             },
             err => {
-                Promise.reject(err)
+                reject(err)
             }
         )
+    })
 }
 
 // function createUser(username, password, role = 'USER'){
@@ -119,15 +122,32 @@ function setToken(username,token){
 
 function findUserByUserName(username){
     var sql = "SELECT * FROM USERS WHERE userName = '" + username + "' LIMIT 1"
-    db.query(sql)
+    return new Promise((resolve,reject) => {
+        db.query(sql)
         .then(
             result => {
-                Promise.resolve(result)
+                resolve(result)
             },
             err => {
-                Promise.reject(err)
+                reject(err)
             }
         )
+    })
+}
+
+function getLightTarget(id){
+    var sql = "SELECT LIGHTS.pin, LOCATIONS.ip, LOCATIONS.port FROM LIGHTSS,LOCATIONS WHERE LOCATIONS.id = LIGHTS.location  AND LIGHTS.id = " + id + " LIMIT 1"
+    return new Promise ((resolve,reject) => {
+        db.query(sql)
+        .then(
+            result => {
+                resolve(result[0])
+            },
+            err => {
+                reject(err)
+            }
+        )
+    })
 }
 
 
@@ -135,5 +155,6 @@ module.exports = {
     getAllStt: getAllStt,
     setLight: setLight,
     findUserByUserName: findUserByUserName,
-    setToken:setToken
+    setToken:setToken,
+    getLightTarget:getLightTarget
 }

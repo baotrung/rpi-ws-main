@@ -13,7 +13,6 @@ var logger = new Logger('ws')
 
 module.exports = router
 router.post('',utils.verifyparams, (req, res) => {
-    logger.info('POST - ' + req.originalUrl, 'username:' + req.body.username + ' | BEGIN')
     db.findUserByUserName(req.body.username)
         .then(
             result => {
