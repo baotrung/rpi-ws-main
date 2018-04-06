@@ -15,7 +15,8 @@ var logger = new Logger('ws')
 router.use('/', utils.verifyToken)
 
 router.get('/init', (req, res) => {
-    db.getAllStt()
+    //console.log(req.decoded)
+    db.getAllSttStrict(req.decoded.username)
         .then(
             rows => {
                 res.send({
@@ -39,23 +40,39 @@ router.post('/light', utils.verifyparams, (req, res) => {
         result: null,
         err: null
     }
+    var target={}
     db.getLightTarget(req.body.lightId)
         .then(
+            data =>{
+                target = data;
+                data.uname = req.decoded.username
+                return Promise.resolve(data)
+            }
+        )
+        .then(db.checkAccess)
+        .then(
             result => {
-                if (result) {
-                    var uri = 'http://' + result.ip + ':' + result.port + '/light/set'
+                if (result.access == 1) { // access granted
+                    var uri = 'http://' + target.ip + ':' + target.port + '/light/set'
                     return Promise.resolve({
                         method: 'POST',
                         uri: uri,
                         body: {
                             id: req.body.lightId,
-                            pin: result.pin,
+                            pin: target.pin,
                             status: req.body.lightStt
                         },
                         json: true // Automatically stringifies the body to JSON
                     })
                 }else{
-                    return Promise.reject("database error: record not exist")
+                    // throw({
+                    //     name: 'ERR_ACCESS_DENIED',
+                    //     message: 'error: user \''+req.decoded.username+'\' has no access in this location'
+                    // })
+                    var customErr = new Error()
+                    customErr.name = 'ERR_ACCESS_DENIED'
+                    customErr.message = 'error: user \''+req.decoded.username+'\' has no access in this location'
+                    throw(customErr)
                 }
             }
         )
@@ -73,11 +90,20 @@ router.post('/light', utils.verifyparams, (req, res) => {
         })
         .catch(err => {
             logger.err('POST - ' + req.originalUrl, err)
-            //console.log(err)
-            res.json({
-                result: null,
-                err: e.ERR_INTERNAL
-            })
+            switch(err.name){
+                case 'ERR_ACCESS_DENIED':
+                res.json({
+                    result:null,
+                    err: e.ERR_ACCESS_DENIED
+                })
+                break
+                default:
+                res.json({
+                    result: null,
+                    err: e.ERR_INTERNAL
+                })
+                break
+            }
         }).then(
             () => {
                 logger.info('POST - ' + req.originalUrl, 'END')

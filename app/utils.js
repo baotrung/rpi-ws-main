@@ -28,8 +28,22 @@ function verifyToken(req,res,next){
                     err: e.ERR_AUTHENTICATION_TOKEN
                 })
             }else{
-                req.decoded = decoded
-                next()
+                db.getTokenByUsername(decoded.username)
+                    .then( result => {
+                        if(result.userToken == token){
+                            req.decoded = decoded
+                            next()
+                        }else{
+                            throw('token error: overrided')
+                        }
+                    }).catch(err => {
+                        logger.err(req.method + ' - ' + req.originalUrl, 'token: ' + token + ' | ' + err)
+                        logger.info(req.method + ' - ' + req.originalUrl, 'END')
+                        return res.json({
+                            result: null,
+                            err: e.ERR_AUTHENTICATION_TOKEN
+                        })
+                    })
             }
         })
     }else{

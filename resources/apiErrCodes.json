@@ -1,22 +1,27 @@
 {
     "ERR_INTERNAL":{
         "errno":1,
-        "code":"ERR_INTERNAL",
-        "msg":"internal error"
+        "name":"ERR_INTERNAL",
+        "message":"internal error"
     },
     "ERR_AUTHENTICATION_LOGIN":{
         "errno":2,
-        "code":"ERR_AUTHENTICATION_LOGIN",
-        "msg":"username or password incorrect"
+        "name":"ERR_AUTHENTICATION_LOGIN",
+        "message":"username or password incorrect"
     },
     "ERR_AUTHENTICATION_TOKEN":{
         "errno":3,
-        "code":"ERR_AUTHENTICATION_TOKEN",
-        "msg":"token missing, expired or incorrect"
+        "name":"ERR_AUTHENTICATION_TOKEN",
+        "message":"token missing, expired or incorrect"
     },
     "ERR_PARAMS":{
         "errno":4,
-        "code":"ERR_PARAMS",
-        "msg":"bad format or missing params"
+        "name":"ERR_PARAMS",
+        "message":"bad format or missing params"
+    },
+    "ERR_ACCESS_DENIED":{
+        "errno":5,
+        "name":"ERR_ACCESS_DENIED",
+        "message":"access denied"
     }
 }

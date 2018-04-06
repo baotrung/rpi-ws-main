@@ -22,7 +22,7 @@ router.post('',utils.verifyparams, (req, res) => {
                             username: req.body.username
                         }
                         var token = jwt.sign(payload, cfg.secret, {
-                            expiresIn: cfg.ws.expired // 1440 minute = 24 hours
+                            expiresIn: cfg.ws.expired
                         })
 
                         db.setToken(req.body.username, token)
