@@ -28,11 +28,12 @@ router.post('',utils.verifyparams, (req, res) => {
                         db.setToken(req.body.username, token)
 
                         logger.info('POST - ' + req.originalUrl, 'username:' + req.body.username + ' | success')
-
+                        var decoded = jwt.decode(token)
                         res.json({
                             result: {
                                 token: token,
-                                expiresIn: cfg.ws.expired
+                                expiredIn: cfg.ws.expired,
+                                decoded:decoded
                             },
                             err: null
                         })

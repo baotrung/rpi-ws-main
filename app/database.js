@@ -8,6 +8,7 @@ var conn =  mysql.createConnection({
     password: cfg.password,
     database: cfg.dbname
 })
+var _ = require('underscore')
 
 
 function query(sql, args) {
@@ -64,9 +65,9 @@ function getAllSttStrict(username) {
                         locId = parseInt(element.locationId)
                     }
                     result[result.length - 1]['lights'].push({
-                        'id': element.lightId,
-                        'name': element.liName,
-                        'status': element.status
+                        'lightId': element.lightId,
+                        'lightName': element.liName,
+                        'lightStt': element.status
                     })
                     cpt++
                     if (cpt === rows.length) {
@@ -79,6 +80,105 @@ function getAllSttStrict(username) {
                     reject(err)
                 }
             )
+    })
+}
+
+
+function updateStt(uname){
+    var sttDatas = []
+    var locIds = []
+
+    return new Promise((resolve, reject) => {
+        getUserbyusername(uname)
+        .then(
+            user =>{
+                switch (user.userRole) {
+                    case 'ADMIN':
+                        return Promise.resolve('SELECT id,name FROM LOCATIONS')
+                        break
+                    case 'USER':
+                        return Promise.resolve("SELECT id,name FROM LOCATIONS lo WHERE lo.access = 0 OR (lo.access = 1 AND lo.id IN (SELECT locationId FROM LOC_ACCESS WHERE userId = "+ user.userId +"))")
+                        break
+                    default: // GUEST
+                        return Promise.resolve("SELECT id,name FROM LOCATIONS lo WHERE lo.access = 0")
+                        break
+                }
+            }
+        )
+        .then(query)
+        .then(
+            locations => {
+                sttDatas = locations
+                _.each(sttDatas,item =>{
+                    item.lights = []
+                    item.ht_sensors = []
+                })
+                locIds = _.map(locations,location => {
+                    return location.id
+                })
+                return Promise.resolve(locIds)
+            }
+        )
+        .then(
+            data => {
+                return Promise.resolve("SELECT * FROM LIGHTS WHERE location IN (SELECT id FROM LOCATIONS WHERE id IN (" + locIds.join() + "))")
+            }
+        )
+        .then(query)
+        .then(
+            lights => {
+                lights.forEach( light => {
+                    var index = _.findIndex(sttDatas,item => {
+                        return item.id == light.location
+                    })
+                    sttDatas[index].lights.push({
+                        lightId: light.id,
+                        lightName: light.name,
+                        lightStt: light.status
+                    })
+                })
+                return Promise.resolve(sttDatas)
+            }
+        )
+        .then(
+            () => {
+                return Promise.resolve("SELECT * FROM HT_SENSORS WHERE locationId IN (SELECT id FROM LOCATIONS WHERE id IN (" + locIds.join() + "))")
+            }
+        )
+        .then(query)
+        .then(
+            htss => {
+                htss.forEach( hts => {
+                    var index = _.findIndex(sttDatas,item => {
+                        return item.id == hts.locationId
+                    })
+                    sttDatas[index].ht_sensors.push({
+                        htsId: hts.htsId,
+                        htsName: hts.htsName,
+                        htsHumidity: hts.htsHumidity,
+                        htsTemperature : hts.htsTemperature
+                    })
+                })
+                return Promise.resolve(sttDatas)
+            }
+        )
+        .then(
+            () => {
+                resolve(sttDatas)
+            }
+        )
+        .catch(
+            err => {
+                reject(err)
+            }
+        )
+    })
+}
+
+
+function getLightByLocations(sql){
+    return new promise((resolve,reject) => {
+        query(sql)
     })
 }
 
@@ -237,5 +337,6 @@ module.exports = {
     setToken: setToken,
     getLightTarget: getLightTarget,
     getTokenByUsername: getTokenByUsername,
-    checkAccess:checkAccess
+    checkAccess:checkAccess,
+    updateStt:updateStt
 }

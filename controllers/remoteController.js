@@ -1,7 +1,7 @@
 var router = require('express')()
 //var firewall = require('../app/firewall').global
 var Logger = require('../app/logger')
-//var _ = require('underscore')
+var _ = require('underscore')
 var db = require('../app/database')
 var e = require('../resources/apiErrCodes.json')
 var utils = require('../app/utils')
@@ -16,7 +16,7 @@ router.use('/', utils.verifyToken)
 
 router.get('/init', (req, res) => {
     //console.log(req.decoded)
-    db.getAllSttStrict(req.decoded.username)
+    db.updateStt(req.decoded.username)
         .then(
             rows => {
                 res.send({
